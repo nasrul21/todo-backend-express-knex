@@ -1,4 +1,4 @@
-const knex = require("./connection");
+const knex = require('./connection');
 
 async function all() {
     return knex('todos');
@@ -15,7 +15,10 @@ async function create(title, order) {
 }
 
 async function update(id, properties) {
-    const results = await knex('todos').where({ id }).update({ ...properties }).returning('*');
+    const results = await knex('todos')
+        .where({ id })
+        .update({ ...properties })
+        .returning('*');
     return results[0];
 }
 
@@ -35,5 +38,5 @@ module.exports = {
     create,
     update,
     delete: del,
-    clear
-}
+    clear,
+};
