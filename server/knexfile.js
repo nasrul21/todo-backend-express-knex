@@ -12,7 +12,8 @@ module.exports = {
     connection: {
       database: process.env.PGDATABASE,
       user:     process.env.PGUSER,
-      password: process.env.PGPASSWORD
+      password: process.env.PGPASSWORD,
+      ssl: true
     },
     pool: {
       min: 2,
@@ -28,7 +29,8 @@ module.exports = {
     connection: {
       database: process.env.PGDATABASE,
       user:     process.env.PGUSER,
-      password: process.env.PGPASSWORD
+      password: process.env.PGPASSWORD,
+      ssl: true
     },
     pool: {
       min: 2,
@@ -44,7 +46,8 @@ module.exports = {
     connection: {
       database: 'my_db',
       user:     'username',
-      password: 'password'
+      password: 'password',
+      ssl: true
     },
     pool: {
       min: 2,
