@@ -1,5 +1,5 @@
-const app = require('./server-config.js');
-const routes = require('./server-routes.js');
+const app = require('./server-config');
+const routes = require('./server-routes');
 
 const port = process.env.PORT || 5000;
 

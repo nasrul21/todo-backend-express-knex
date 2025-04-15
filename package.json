@@ -4,11 +4,11 @@
   "scripts": {
     "db:migrate": "cd server && npx knex migrate:latest",
     "client": "cd client && yarn start",
-    "server": "cd server && nodemon server.js",
+    "server": "cd server && nodemon server.ts",
     "dev": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\"",
     "test": "cd server && jest",
     "test:watch": "cd server && jest --watch",
-    "start": "cd server && node server.js"
+    "start": "cd server && node dist/server.js"
   },
   "dependencies": {
     "body-parser": "^2.2.0",
@@ -22,6 +22,9 @@
     "supertest": "^7.1.0"
   },
   "devDependencies": {
-    "concurrently": "^9.1.2"
+    "@types/express": "^5.0.1",
+    "concurrently": "^9.1.2",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.8.3"
   }
 }
