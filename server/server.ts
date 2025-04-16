@@ -1,16 +1,9 @@
-const app = require('./server-config');
-const routes = require('./server-routes');
+import app from './server-config';
+import apiRoutes from './server-routes';
 
 const port = process.env.PORT || 5000;
 
-app.get('/', routes.getAllTodos);
-app.get('/:id', routes.getTodo);
-
-app.post('/', routes.postTodo);
-app.patch('/:id', routes.patchTodo);
-
-app.delete('/', routes.deleteAllTodos);
-app.delete('/:id', routes.deleteTodo);
+apiRoutes(app);
 
 if (process.env.NODE_ENV !== 'test') {
     app.listen(port, () => console.log(`Listening on port ${port}`));

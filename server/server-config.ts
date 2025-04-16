@@ -23,4 +23,4 @@ app.use(function (req: Request, res: Response, next: NextFunction) {
     next();
 });
 
-module.exports = app;
+export default app;
