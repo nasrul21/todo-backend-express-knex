@@ -52,3 +52,6 @@ routers.delete('/todo/:id', (req: Request, res: Response) =>
 routers.post('/auth/register', (req: Request, res: Response) =>
     authController.register(req, res)
 );
+routers.post('/auth/login', (req: Request, res: Response) => {
+    authController.login(req, res);
+});

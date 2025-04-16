@@ -1,13 +1,18 @@
-import bcrypt from 'bcrypt';
+import { createSecretKey } from 'crypto';
+import jwt from 'jsonwebtoken';
 import OrganizationRepository from '../organization/organizationRepository';
 import UserRepository from '../user/userRepository';
 import {
+    LoginRequest,
+    LoginResponse,
     newRegisterResponse,
     RegisterRequest,
     RegisterResponse,
 } from './authModel';
 import UserOrganizationRepository from '../user_organization/userOrganizationRepository';
+import { BaseResponse } from '../common/base_response';
 
+const bcrypt = require('bcrypt');
 export default class AuthService {
     private userRepository: UserRepository;
     private organizationRepository: OrganizationRepository;
@@ -27,7 +32,7 @@ export default class AuthService {
 
     async register(
         params: RegisterRequest
-    ): Promise<{ data?: RegisterResponse; error?: string }> {
+    ): Promise<BaseResponse<RegisterResponse>> {
         const users = await this.userRepository.findByEmail(params.email);
         if (users.length > 0) {
             return { error: 'Email already registered' };
@@ -58,5 +63,45 @@ export default class AuthService {
         const response = newRegisterResponse(newUser, organization);
 
         return { data: response };
+    }
+
+    async login(params: LoginRequest): Promise<BaseResponse<LoginResponse>> {
+        const users = await this.userRepository.findByEmail(params.email);
+        if (users.length == 0) {
+            return { error: 'User is not found' };
+        }
+
+        const user = users[0];
+
+        const isValidPassword = await bcrypt.compare(
+            params.password,
+            user.password_hash
+        );
+        if (!isValidPassword) {
+            return { error: 'Invalid login credentials' };
+        }
+
+        const secretKey = process.env.JWT_SECRET!;
+
+        const options: jwt.SignOptions = {
+            algorithm: 'HS256',
+            expiresIn: '1h',
+        };
+
+        const token = jwt.sign(
+            {
+                id: user.id!,
+                email: user.email,
+            },
+            secretKey,
+            options
+        );
+
+        return {
+            data: {
+                access_token: token,
+                token_type: 'Bearer',
+            },
+        };
     }
 }

@@ -1,3 +1,4 @@
+import { Request } from 'express';
 import { OrganizationModel } from '../organization/organizationModel';
 import { UserModel } from '../user/userModel';
 
@@ -31,4 +32,14 @@ export function newRegisterResponse(
             name: organization.name,
         },
     };
+}
+
+export interface LoginRequest extends Request {
+    email: string;
+    password: string;
+}
+
+export interface LoginResponse {
+    access_token: string;
+    token_type: string;
 }
