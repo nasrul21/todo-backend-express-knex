@@ -9,7 +9,7 @@ export default class Controller {
                 console.log(`${message} caused by: ${err}`);
 
                 // Not always 500, but for simplicity's sake.
-                return res.status(500).send(`Opps! ${message}.`);
+                return res.status(500).send({ error: `Opps! ${message}.` });
             }
         };
     }

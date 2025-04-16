@@ -1,5 +1,6 @@
 import { Knex } from 'knex';
 import { TodoModel } from './todoModel';
+import { reject } from 'lodash';
 
 export default class TodoRepository {
     private db: Knex;
@@ -13,35 +14,62 @@ export default class TodoRepository {
     }
 
     async get(id: number): Promise<TodoModel> {
-        const results = await this.db('todos').where({ id });
-        return results[0];
+        return new Promise(async (resolve, reject) => {
+            const results = await this.db('todos').where({ id });
+            if (results.length == 0) {
+                reject('todo is not found');
+            }
+            resolve(results[0]);
+        });
     }
 
     async create(title: string, order?: number): Promise<TodoModel> {
-        const results = await this.db('todos')
-            .insert({ title, order })
-            .returning('*');
-        return results[0];
+        return new Promise(async (resolve, reject) => {
+            const results = await this.db('todos')
+                .insert({ title, order })
+                .returning('*');
+
+            if (results.length == 0) {
+                reject('failed to create todo');
+            }
+            resolve(results[0]);
+        });
     }
 
     async update(id: number, properties: Object): Promise<TodoModel> {
-        const results = await this.db('todos')
-            .where({ id })
-            .update({ ...properties })
-            .returning('*');
-        return results[0];
+        return new Promise(async (resolve, reject) => {
+            const results = await this.db('todos')
+                .where({ id })
+                .update({ ...properties })
+                .returning('*');
+            if (results.length == 0) {
+                reject('failed to update todo');
+            }
+            resolve(results[0]);
+        });
     }
 
     // delete is a reserved keyword
     async del(id: number): Promise<TodoModel> {
-        const results = await this.db('todos')
-            .where({ id })
-            .del()
-            .returning('*');
-        return results[0];
+        return new Promise(async (resolve, reject) => {
+            const results = await this.db('todos')
+                .where({ id })
+                .del()
+                .returning('*');
+            if (results.length == 0) {
+                reject('failed to update todo');
+            }
+            resolve(results[0]);
+        });
     }
 
     async clear(): Promise<TodoModel[]> {
-        return this.db('todos').del().returning('*');
+        return new Promise(async (resolve, reject) => {
+            const results = await this.db('todos').del().returning('*');
+            if (results.length == 0) {
+                reject('failed to cleas todos');
+            }
+            resolve(results[0]);
+        });
     }
 }

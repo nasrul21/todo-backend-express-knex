@@ -21,7 +21,9 @@ export default class TodoController extends Controller {
 
     async getTodo(req: Request, res: Response) {
         return this.addErrorReporting(async (req: Request, res: Response) => {
-            const todo = await this.todoService.get(Number(req.params.id));
+            const id = parseInt(req.params.id);
+            console.log('ID: ', id);
+            const todo = await this.todoService.get(id);
             return res.send(todo);
         }, 'Could not fetch todo')(req, res);
     }
@@ -39,7 +41,7 @@ export default class TodoController extends Controller {
     async patchTodo(req: Request, res: Response) {
         return this.addErrorReporting(async (req: Request, res: Response) => {
             const patched = await this.todoService.update(
-                Number(req.params.id),
+                parseInt(req.params.id),
                 req.body
             );
             return res.send(newTodoReponse(req, patched));
@@ -55,7 +57,7 @@ export default class TodoController extends Controller {
 
     async deleteTodo(req: Request, res: Response) {
         return this.addErrorReporting(async (req: Request, res: Response) => {
-            const deleted = await this.todoService.del(Number(req.params.id));
+            const deleted = await this.todoService.del(parseInt(req.params.id));
             return res.send(newTodoReponse(req, deleted));
         }, 'Could not delete todo')(req, res);
     }

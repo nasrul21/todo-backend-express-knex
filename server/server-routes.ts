@@ -12,7 +12,7 @@ export default function apiRoutes(app: Express): void {
     app.get('/', (req: Request, res: Response) =>
         todoController.getAllTodos(req, res)
     );
-    app.get('/:id', (req: Request, res: Response) =>
+    app.get('/todo/:id', (req: Request, res: Response) =>
         todoController.getTodo(req, res)
     );
 
