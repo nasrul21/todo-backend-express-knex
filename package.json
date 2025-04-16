@@ -9,9 +9,11 @@
         "dev": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\"",
         "test": "cd server && jest",
         "test:watch": "cd server && jest --watch",
-        "start": "cd server && node dist/server.js"
+        "start": "cd server && node dist/server.js",
+        "swagger": "cd server && ts-node swagger.ts"
     },
     "dependencies": {
+        "@types/swagger-ui-express": "^4.1.8",
         "body-parser": "^2.2.0",
         "dotenv": "^16.5.0",
         "express": "^5.1.0",
@@ -20,7 +22,9 @@
         "lodash": "^4.17.21",
         "nodemon": "^3.1.9",
         "pg": "^8.14.1",
-        "supertest": "^7.1.0"
+        "supertest": "^7.1.0",
+        "swagger-autogen": "^2.23.7",
+        "swagger-ui-express": "^5.0.1"
     },
     "devDependencies": {
         "@types/express": "^5.0.1",

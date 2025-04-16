@@ -1,9 +1,13 @@
 import app from './server-config';
-import apiRoutes from './server-routes';
+import { todoRouter } from './server-routes';
+import swaggerUi from 'swagger-ui-express';
+const swaggerOutput = require('./swagger_output.json');
 
 const port = process.env.PORT || 5000;
 
-apiRoutes(app);
+app.use('/api', todoRouter);
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerOutput));
 
 if (process.env.NODE_ENV !== 'test') {
     app.listen(port, () => console.log(`Listening on port ${port}`));
