@@ -6,19 +6,23 @@ import {
     RegisterRequest,
     RegisterResponse,
 } from './authModel';
+import UserOrganizationRepository from '../user_organization/userOrganizationRepository';
 
 export default class AuthService {
     private userRepository: UserRepository;
     private organizationRepository: OrganizationRepository;
+    private userOrganizationRepository: UserOrganizationRepository;
 
     private SALT_ROUND = 10;
 
     constructor(
         userRespository: UserRepository,
-        organizationRepository: OrganizationRepository
+        organizationRepository: OrganizationRepository,
+        userOrganizationRepository: UserOrganizationRepository
     ) {
         this.userRepository = userRespository;
         this.organizationRepository = organizationRepository;
+        this.userOrganizationRepository = userOrganizationRepository;
     }
 
     async register(
@@ -43,6 +47,12 @@ export default class AuthService {
             name: params.name,
             email: params.email,
             password_hash: passwordHash,
+        });
+
+        // insert new user organization
+        await this.userOrganizationRepository.insert({
+            user_id: newUser.id!,
+            organization_id: organization.id!,
         });
 
         const response = newRegisterResponse(newUser, organization);

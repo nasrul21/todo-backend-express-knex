@@ -7,6 +7,7 @@ import UserRepository from './api/user/userRepository';
 import OrganizationRepository from './api/organization/organizationRepository';
 import AuthService from './api/auth/authService';
 import AuthController from './api/auth/authController';
+import UserOrganizationRepository from './api/user_organization/userOrganizationRepository';
 
 export const routers = Router();
 
@@ -14,10 +15,15 @@ export const routers = Router();
 const todoRepository = new TodoRepository(dbConnection);
 const userRepository = new UserRepository(dbConnection);
 const organizationRepository = new OrganizationRepository(dbConnection);
+const userOrganizationRepository = new UserOrganizationRepository(dbConnection);
 
 // services
 const todoService = new TodoService(todoRepository);
-const authService = new AuthService(userRepository, organizationRepository);
+const authService = new AuthService(
+    userRepository,
+    organizationRepository,
+    userOrganizationRepository
+);
 
 // controllers
 const todoController = new TodoController(todoService);
