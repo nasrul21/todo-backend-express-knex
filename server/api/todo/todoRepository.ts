@@ -1,14 +1,8 @@
 import { Knex } from 'knex';
 import { TodoModel } from './todoModel';
-import { reject } from 'lodash';
+import Repository from '../repository';
 
-export default class TodoRepository {
-    private db: Knex;
-
-    constructor(db: Knex) {
-        this.db = db;
-    }
-
+export default class TodoRepository extends Repository {
     async all(): Promise<TodoModel[]> {
         return await this.db('todos');
     }
