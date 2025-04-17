@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import Controller from '../controller';
 import ProjectService from './projectService';
 import { AuthTokenDetail } from '../auth/authModel';
-import { CreateProjectRequest } from './projectModel';
+import { CreateProjectRequest, UpdateProjectRequest } from './projectModel';
 import { httpStatusFromError } from '../common/httpStatus';
 
 export default class ProjectController extends Controller {
@@ -43,5 +43,22 @@ export default class ProjectController extends Controller {
                 .status(httpStatusFromError(response.error))
                 .json(response);
         }, 'failed to get list of projects')(req, res);
+    }
+
+    async update(req: Request, res: Response) {
+        return this.addErrorReporting(async (req: Request, res: Response) => {
+            const user = (req as AuthTokenDetail).user;
+            const { projectId } = req.params as { projectId: string };
+            const { name, description } = req.body as UpdateProjectRequest;
+            const response = await this.projectService.update(
+                { name, description },
+                parseInt(projectId),
+                user.id
+            );
+
+            return res
+                .status(httpStatusFromError(response.error))
+                .json(response);
+        }, 'failed to update the projects')(req, res);
     }
 }

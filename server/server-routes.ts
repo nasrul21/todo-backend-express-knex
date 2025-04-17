@@ -83,3 +83,9 @@ routers.get('/organizations/:orgId/projects', (req: Request, res: Response) =>
     }] */
     projectController.list(req, res)
 );
+routers.patch('/projects/:projectId', (req: Request, res: Response) =>
+    /* #swagger.security = [{
+            "bearerAuth": []
+    }] */
+    projectController.update(req, res)
+);

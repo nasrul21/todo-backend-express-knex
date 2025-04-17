@@ -3,6 +3,7 @@ import {
     ErrForbiddenAccessOrganization,
     ErrForbiddenCreateProject,
     ErrInvalidOrganization,
+    ErrInvalidProject,
 } from '../common/error';
 import { OrganizationModel } from '../organization/organizationModel';
 import OrganizationRepository from '../organization/organizationRepository';
@@ -17,6 +18,9 @@ import {
     GetProjectResponse,
     newCreateProjectResponse,
     newGetProjectResponse,
+    newUpdateProjectResponse,
+    UpdateProjectRequest,
+    UpdateProjectResponse,
 } from './projectModel';
 import ProjectRepository from './projectRepository';
 
@@ -91,6 +95,33 @@ export default class ProjectService {
             newGetProjectResponse(project)
         );
 
+        return { data: response };
+    }
+
+    async update(
+        params: UpdateProjectRequest,
+        id: number,
+        userId: number
+    ): Promise<BaseResponse<UpdateProjectResponse>> {
+        const projects = await this.projectRepository.findById(id);
+        if (projects.length == 0) {
+            return { error: ErrInvalidProject };
+        }
+        const project = projects[0];
+        const validationResult = await this.validateUserOrganization(
+            project.organization_id,
+            userId
+        );
+
+        if (validationResult.error) {
+            return { error: validationResult.error };
+        }
+
+        const updatedProject = await this.projectRepository.update(id, {
+            ...params,
+        });
+
+        const response = newUpdateProjectResponse(updatedProject);
         return { data: response };
     }
 

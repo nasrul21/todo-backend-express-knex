@@ -54,3 +54,24 @@ export function newGetProjectResponse(
         organization_id: project.organization_id,
     };
 }
+
+export interface UpdateProjectRequest {
+    name?: string;
+    description?: string;
+}
+
+export interface UpdateProjectResponse {
+    id?: number;
+    name?: string;
+    description?: string;
+}
+
+export function newUpdateProjectResponse(
+    project: ProjectModel
+): UpdateProjectResponse {
+    return {
+        id: project.id,
+        name: project.name,
+        description: project.description,
+    };
+}

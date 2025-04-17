@@ -24,10 +24,11 @@ export default class ProjectRepository extends Repository {
         });
     }
 
-    async update(
-        id: number,
-        properties: ProjectModel
-    ): Promise<ProjectModel[]> {
+    async findById(id: number): Promise<ProjectModel[]> {
+        return await this.db('projects').where({ id });
+    }
+
+    async update(id: number, properties: Object): Promise<ProjectModel> {
         return new Promise(async (resolve, reject) => {
             const projects = await this.db('projects')
                 .where({ id })

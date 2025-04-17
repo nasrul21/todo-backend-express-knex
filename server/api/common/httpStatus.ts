@@ -5,6 +5,7 @@ import {
     ErrForbiddenAccessOrganization,
     ErrForbiddenCreateProject,
     ErrInvalidOrganization,
+    ErrInvalidProject,
 } from './error';
 
 const StatusOK: number = 200;
@@ -20,6 +21,7 @@ const MapHttpStatusByError: { [error: string]: number } = {
     [ErrAuthEmailAlreadyRegistered]: StatusBadRequest,
     [ErrAuthInvalidLoginCredential]: StatusBadRequest,
     [ErrAuthUserNotFound]: StatusBadRequest,
+    [ErrInvalidProject]: StatusBadRequest,
 };
 
 export function httpStatusFromError(error?: string): number {
