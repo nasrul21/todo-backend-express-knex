@@ -52,3 +52,11 @@ export function newTodoReponse(data: TodoModel): TodoResponse {
         created_by: data.created_by,
     };
 }
+
+export interface UpdateTodoRequest {
+    title: string;
+    order: number;
+    description: string;
+    due_date: Date;
+    status: string;
+}

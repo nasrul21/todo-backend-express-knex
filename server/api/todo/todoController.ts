@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import TodoService from './todoService';
-import { newTodoReponse, TodoRequest } from './todoModel';
+import { newTodoReponse, TodoRequest, UpdateTodoRequest } from './todoModel';
 import _ from 'lodash';
 import Controller from '../controller';
 import { httpStatusFromError } from '../common/httpStatus';
@@ -23,7 +23,7 @@ export default class TodoController extends Controller {
             );
             return res
                 .status(httpStatusFromError(response.error))
-                .send(response);
+                .json(response);
         }, 'Could not fetch all todos')(req, res);
     }
 
@@ -41,7 +41,7 @@ export default class TodoController extends Controller {
             );
             return res
                 .status(httpStatusFromError(response.error))
-                .send(response);
+                .json(response);
         }, 'Could not fetch todo')(req, res);
     }
 
@@ -60,17 +60,24 @@ export default class TodoController extends Controller {
             );
             return res
                 .status(httpStatusFromError(response.error))
-                .send(response);
+                .json(response);
         }, 'Could not post todo')(req, res);
     }
 
     async patchTodo(req: Request, res: Response) {
         return this.addErrorReporting(async (req: Request, res: Response) => {
-            const patched = await this.todoService.update(
-                parseInt(req.params.id),
-                req.body
+            const user = this.getUserFromToken(req);
+            const { title, description, due_date, order, status } =
+                req.body as UpdateTodoRequest;
+            const { id } = req.params as { id: string };
+            const response = await this.todoService.update(
+                { title, description, due_date, order, status },
+                parseInt(id),
+                user.id
             );
-            return res.send(newTodoReponse(patched));
+            return res
+                .status(httpStatusFromError(response.error))
+                .json(response);
         }, 'Could not patch todo')(req, res);
     }
 

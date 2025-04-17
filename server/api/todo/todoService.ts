@@ -15,6 +15,7 @@ import {
     TodoRequest,
     TodoResponse,
     TodoStatusWaiting,
+    UpdateTodoRequest,
 } from './todoModel';
 import TodoRepository from './todoRepository';
 
@@ -107,8 +108,30 @@ export default class TodoService {
         return { data: response };
     }
 
-    async update(id: number, properties: Object): Promise<TodoModel> {
-        return await this.todoRepository.update(id, properties);
+    async update(
+        params: UpdateTodoRequest,
+        id: number,
+        userId: number
+    ): Promise<BaseResponse<TodoResponse>> {
+        const todos = await this.todoRepository.findById(id);
+        if (todos.length == 0) {
+            return { error: ErrInvalidTodo };
+        }
+        const todo = todos[0];
+
+        const validationResult = await this.validateProjectAndUserOrganization(
+            todo.project_id,
+            userId
+        );
+
+        if (validationResult.error) {
+            return { error: validationResult.error };
+        }
+
+        const updatedTodo = await this.todoRepository.update(id, { ...params });
+
+        const response = newTodoReponse(updatedTodo);
+        return { data: response };
     }
 
     // delete is a reserved keyword
