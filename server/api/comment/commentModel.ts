@@ -63,3 +63,15 @@ export function newGetCommentResponse(
         created_at: comment.created_at,
     };
 }
+
+export interface UpdateCommentRequest {
+    content: string;
+}
+
+export interface UpdateCommentResponse {
+    id: number;
+}
+
+export interface DeleteCommentResponse {
+    id: number;
+}

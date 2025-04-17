@@ -133,17 +133,29 @@ routers.delete('/projects/:projectId', (req: Request, res: Response) =>
 );
 
 // Comment Routes
-routers.post('/todos/:todoId/comment', (req: Request, res: Response) =>
+routers.post('/todos/:todoId/comments', (req: Request, res: Response) =>
     /* #swagger.security = [{
             "bearerAuth": []
     }] */
     commentController.create(req, res)
 );
-routers.get('/todos/:todoId/comment', (req: Request, res: Response) =>
+routers.get('/todos/:todoId/comments', (req: Request, res: Response) =>
     /* #swagger.security = [{
             "bearerAuth": []
     }] */
     commentController.list(req, res)
+);
+routers.patch('/comments/:commentId', (req: Request, res: Response) =>
+    /* #swagger.security = [{
+            "bearerAuth": []
+    }] */
+    commentController.update(req, res)
+);
+routers.delete('/comment/:commentId', (req: Request, res: Response) =>
+    /* #swagger.security = [{
+            "bearerAuth": []
+    }] */
+    commentController.delete(req, res)
 );
 
 // End Private Routes

@@ -15,9 +15,12 @@ import UserOrganizationRepository from '../user_organization/userOrganizationRep
 import {
     CreateCommentRequest,
     CreateCommentResponse,
+    DeleteCommentResponse,
     GetCommentResponse,
     newCreateCommentResponse,
     newGetCommentResponse,
+    UpdateCommentRequest,
+    UpdateCommentResponse,
 } from './commentModel';
 import CommentRepository from './commentRepository';
 
@@ -116,5 +119,59 @@ export default class CommentService {
         const userOrganization = userOrganizations[0];
 
         return { data: { todo, project, userOrganization } };
+    }
+
+    async update(
+        params: UpdateCommentRequest,
+        id: number,
+        userId: number
+    ): Promise<BaseResponse<UpdateCommentResponse>> {
+        const comments = await this.commentRepository.findById(id);
+        if (comments.length == 0) {
+            return { error: ErrInvalidTodo };
+        }
+        const comment = comments[0];
+        const validationResult = await this.validateTodoProjectAndOrganization(
+            comment.todo_id,
+            userId
+        );
+
+        if (validationResult.error) {
+            return { error: validationResult.error };
+        }
+
+        const updatedComment = await this.commentRepository.update(id, {
+            ...params,
+        });
+
+        return {
+            data: {
+                id: updatedComment.id!,
+            },
+        };
+    }
+
+    async delete(
+        id: number,
+        userId: number
+    ): Promise<BaseResponse<DeleteCommentResponse>> {
+        const comments = await this.commentRepository.findById(id);
+        if (comments.length == 0) {
+            return { error: ErrInvalidProject };
+        }
+        const comment = comments[0];
+        const validationResult = await this.validateTodoProjectAndOrganization(
+            comment.todo_id,
+            userId
+        );
+
+        if (validationResult.error) {
+            return { error: validationResult.error };
+        }
+
+        const deletedComment = await this.commentRepository.delete(id);
+
+        const response: DeleteCommentResponse = { id: deletedComment.id! };
+        return { data: response };
     }
 }
