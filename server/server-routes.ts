@@ -82,7 +82,7 @@ routers.patch('/todo/:id', (req: Request, res: Response) =>
     }] */
     todoController.patchTodo(req, res)
 );
-routers.delete('/todo', (req: Request, res: Response) =>
+routers.delete('/projects/:projectId/todo', (req: Request, res: Response) =>
     /* #swagger.security = [{
             "bearerAuth": []
     }] */

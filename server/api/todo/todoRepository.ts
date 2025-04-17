@@ -53,13 +53,16 @@ export default class TodoRepository extends Repository {
         });
     }
 
-    async clear(): Promise<TodoModel[]> {
+    async clear(projectId: number): Promise<TodoModel[]> {
         return new Promise(async (resolve, reject) => {
-            const results = await this.db('todos').del().returning('*');
+            const results = await this.db('todos')
+                .where({ project_id: projectId })
+                .del()
+                .returning('*');
             if (results.length == 0) {
                 reject('failed to cleas todos');
             }
-            resolve(results[0]);
+            resolve(results);
         });
     }
 }

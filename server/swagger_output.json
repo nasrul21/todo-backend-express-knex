@@ -141,6 +141,29 @@
             }
           }
         }
+      },
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/api/projects/{projectId}/todo/{id}": {
@@ -241,21 +264,6 @@
         "responses": {
           "default": {
             "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
-      }
-    },
-    "/api/todo": {
-      "delete": {
-        "description": "",
-        "responses": {
-          "200": {
-            "description": "OK"
           }
         },
         "security": [

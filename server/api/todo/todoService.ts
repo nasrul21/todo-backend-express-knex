@@ -156,8 +156,22 @@ export default class TodoService {
         return { data: response };
     }
 
-    async clear(): Promise<TodoModel[]> {
-        return await this.todoRepository.clear();
+    async clear(
+        projectId: number,
+        userId: number
+    ): Promise<BaseResponse<TodoResponse[]>> {
+        const validationResult = await this.validateProjectAndUserOrganization(
+            projectId,
+            userId
+        );
+
+        if (validationResult.error) {
+            return { error: validationResult.error };
+        }
+        const todos = await this.todoRepository.clear(projectId);
+
+        const response = todos.map((todo) => newTodoReponse(todo));
+        return { data: response };
     }
 
     protected async validateProjectAndUserOrganization(
