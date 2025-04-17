@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import OrganizationRepository from '../organization/organizationRepository';
 import UserRepository from '../user/userRepository';
 import {
+    AuthTokenSign,
     LoginRequest,
     LoginResponse,
     newRegisterResponse,
@@ -99,7 +100,8 @@ export default class AuthService {
             {
                 id: user.id!,
                 email: user.email,
-            },
+                name: user.name,
+            } as AuthTokenSign,
             secretKey,
             options
         );

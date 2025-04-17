@@ -51,4 +51,5 @@ export interface AuthTokenDetail extends Request {
 export interface AuthTokenSign {
     id: number;
     email: string;
+    name: string;
 }

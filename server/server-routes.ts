@@ -12,6 +12,9 @@ import ProjectRepository from './api/project/projectRepository';
 import ProjectService from './api/project/projectService';
 import ProjectController from './api/project/projectController';
 import { authMiddleware } from './api/common/middleware';
+import CommentRepository from './api/comment/commentRepository';
+import CommentService from './api/comment/commentService';
+import CommentController from './api/comment/commentController';
 
 export const routers = Router();
 
@@ -21,6 +24,7 @@ const userRepository = new UserRepository(dbConnection);
 const organizationRepository = new OrganizationRepository(dbConnection);
 const userOrganizationRepository = new UserOrganizationRepository(dbConnection);
 const projectRepository = new ProjectRepository(dbConnection);
+const commentRepository = new CommentRepository(dbConnection);
 
 // services
 const todoService = new TodoService(
@@ -38,11 +42,18 @@ const projectService = new ProjectService(
     organizationRepository,
     userOrganizationRepository
 );
+const commentService = new CommentService(
+    commentRepository,
+    todoRepository,
+    projectRepository,
+    userOrganizationRepository
+);
 
 // controllers
 const todoController = new TodoController(todoService);
 const authController = new AuthController(authService);
 const projectController = new ProjectController(projectService);
+const commentController = new CommentController(commentService);
 
 // Start Public Routes
 // Auth Routes
@@ -120,4 +131,13 @@ routers.delete('/projects/:projectId', (req: Request, res: Response) =>
     }] */
     projectController.delete(req, res)
 );
+
+// Comment Routes
+routers.post('/todos/:todoId/comment', (req: Request, res: Response) =>
+    /* #swagger.security = [{
+            "bearerAuth": []
+    }] */
+    commentController.create(req, res)
+);
+
 // End Private Routes
