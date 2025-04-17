@@ -11,6 +11,7 @@ import {
 } from './authModel';
 import UserOrganizationRepository from '../user_organization/userOrganizationRepository';
 import { BaseResponse } from '../common/base_response';
+import { UserOrganizationEnum } from '../user_organization/userOrganizationModel';
 
 const bcrypt = require('bcrypt');
 export default class AuthService {
@@ -58,6 +59,7 @@ export default class AuthService {
         await this.userOrganizationRepository.insert({
             user_id: newUser.id!,
             organization_id: organization.id!,
+            role: UserOrganizationEnum.Admin,
         });
 
         const response = newRegisterResponse(newUser, organization);
