@@ -90,8 +90,12 @@ export default class TodoController extends Controller {
 
     async deleteTodo(req: Request, res: Response) {
         return this.addErrorReporting(async (req: Request, res: Response) => {
-            const deleted = await this.todoService.del(parseInt(req.params.id));
-            return res.send(newTodoReponse(deleted));
+            const user = this.getUserFromToken(req);
+            const { id } = req.params as { id: string };
+            const response = await this.todoService.del(parseInt(id), user.id);
+            return res
+                .status(httpStatusFromError(response.error))
+                .json(response);
         }, 'Could not delete todo')(req, res);
     }
 }

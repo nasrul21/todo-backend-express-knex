@@ -135,8 +135,25 @@ export default class TodoService {
     }
 
     // delete is a reserved keyword
-    async del(id: number): Promise<TodoModel> {
-        return await this.todoRepository.del(id);
+    async del(id: number, userId: number): Promise<BaseResponse<TodoResponse>> {
+        const todos = await this.todoRepository.findById(id);
+        if (todos.length == 0) {
+            return { error: ErrInvalidTodo };
+        }
+        const todo = todos[0];
+
+        const validationResult = await this.validateProjectAndUserOrganization(
+            todo.project_id,
+            userId
+        );
+
+        if (validationResult.error) {
+            return { error: validationResult.error };
+        }
+        const deletedTodo = await this.todoRepository.del(id);
+
+        const response = newTodoReponse(deletedTodo);
+        return { data: response };
     }
 
     async clear(): Promise<TodoModel[]> {
