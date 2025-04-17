@@ -15,11 +15,9 @@ export default class TodoRepository extends Repository {
         return await this.db('todos').where({ id });
     }
 
-    async create(title: string, order?: number): Promise<TodoModel> {
+    async create(todo: TodoModel): Promise<TodoModel> {
         return new Promise(async (resolve, reject) => {
-            const results = await this.db('todos')
-                .insert({ title, order })
-                .returning('*');
+            const results = await this.db('todos').insert(todo).returning('*');
 
             if (results.length == 0) {
                 reject('failed to create todo');

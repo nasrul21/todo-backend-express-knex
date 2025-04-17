@@ -9,7 +9,13 @@ import { ProjectModel } from '../project/projectModel';
 import ProjectRepository from '../project/projectRepository';
 import { UserOrganizationModel } from '../user_organization/userOrganizationModel';
 import UserOrganizationRepository from '../user_organization/userOrganizationRepository';
-import { newTodoReponse, TodoModel, TodoResponse } from './todoModel';
+import {
+    newTodoReponse,
+    TodoModel,
+    TodoRequest,
+    TodoResponse,
+    TodoStatusWaiting,
+} from './todoModel';
 import TodoRepository from './todoRepository';
 
 export default class TodoService {
@@ -73,8 +79,32 @@ export default class TodoService {
         return { data: response };
     }
 
-    async create(title: string, order?: number): Promise<TodoModel> {
-        return await this.todoRepository.create(title, order);
+    async create(
+        params: TodoRequest,
+        projectId: number,
+        userId: number
+    ): Promise<BaseResponse<TodoResponse>> {
+        const validationResult = await this.validateProjectAndUserOrganization(
+            projectId,
+            userId
+        );
+
+        if (validationResult.error) {
+            return { error: validationResult.error };
+        }
+        const todo = await this.todoRepository.create({
+            title: params.title,
+            description: params.description,
+            completed: false,
+            due_date: params.due_date,
+            order: params.order,
+            project_id: projectId,
+            status: TodoStatusWaiting,
+            created_by: userId,
+        });
+
+        const response = newTodoReponse(todo);
+        return { data: response };
     }
 
     async update(id: number, properties: Object): Promise<TodoModel> {

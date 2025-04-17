@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import TodoService from './todoService';
-import { newTodoReponse } from './todoModel';
+import { newTodoReponse, TodoRequest } from './todoModel';
 import _ from 'lodash';
 import Controller from '../controller';
 import { httpStatusFromError } from '../common/httpStatus';
@@ -47,11 +47,20 @@ export default class TodoController extends Controller {
 
     async postTodo(req: Request, res: Response) {
         return this.addErrorReporting(async (req: Request, res: Response) => {
-            const created = await this.todoService.create(
-                req.body.title,
-                req.body.order
+            const user = this.getUserFromToken(req);
+            const { projectId } = req.params as {
+                projectId: string;
+            };
+            const { title, description, due_date, order } =
+                req.body as TodoRequest;
+            const response = await this.todoService.create(
+                { title, description, due_date, order } as TodoRequest,
+                parseInt(projectId),
+                user.id
             );
-            return res.send(newTodoReponse(created));
+            return res
+                .status(httpStatusFromError(response.error))
+                .send(response);
         }, 'Could not post todo')(req, res);
     }
 

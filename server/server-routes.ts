@@ -70,7 +70,7 @@ routers.get('/projects/:projectId/todo/:id', (req: Request, res: Response) =>
     }] */
     todoController.getTodo(req, res)
 );
-routers.post('/todo', (req: Request, res: Response) =>
+routers.post('/projects/:projectId/todo', (req: Request, res: Response) =>
     /* #swagger.security = [{
             "bearerAuth": []
     }] */
