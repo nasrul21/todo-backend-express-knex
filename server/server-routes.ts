@@ -71,12 +71,15 @@ routers.post('/auth/login', (req: Request, res: Response) => {
 routers.use((req: Request, res: Response, next: NextFunction) => {
     authMiddleware(req, res, next);
 });
-routers.post(
-    '/organizations/:orgId/projects',
-    (req: Request, res: Response) => {
-        /* #swagger.security = [{
+routers.post('/organizations/:orgId/projects', (req: Request, res: Response) =>
+    /* #swagger.security = [{
             "bearerAuth": []
     }] */
-        projectController.create(req, res);
-    }
+    projectController.create(req, res)
+);
+routers.get('/organizations/:orgId/projects', (req: Request, res: Response) =>
+    /* #swagger.security = [{
+            "bearerAuth": []
+    }] */
+    projectController.list(req, res)
 );

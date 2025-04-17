@@ -36,3 +36,21 @@ export function newCreateProjectResponse(
         },
     };
 }
+
+export interface GetProjectResponse {
+    id: number;
+    name: string;
+    description: string;
+    organization_id: number;
+}
+
+export function newGetProjectResponse(
+    project: ProjectModel
+): GetProjectResponse {
+    return {
+        id: project.id!,
+        name: project.name,
+        description: project.description,
+        organization_id: project.organization_id,
+    };
+}

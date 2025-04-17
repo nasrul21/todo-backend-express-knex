@@ -29,4 +29,19 @@ export default class ProjectController extends Controller {
                 .json(response);
         }, 'failed to create new project')(req, res);
     }
+
+    async list(req: Request, res: Response) {
+        return this.addErrorReporting(async (req: Request, res: Response) => {
+            const user = (req as AuthTokenDetail).user;
+            const { orgId } = req.params as { orgId: string };
+            const response = await this.projectService.list(
+                parseInt(orgId),
+                user.id
+            );
+
+            return res
+                .status(httpStatusFromError(response.error))
+                .json(response);
+        }, 'failed to get list of projects')(req, res);
+    }
 }
