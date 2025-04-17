@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import Controller from '../controller';
 import AuthService from './authService';
 import { LoginRequest, RegisterRequest } from './authModel';
+import { httpStatusFromError } from '../common/httpStatus';
 
 export default class AuthController extends Controller {
     private authService: AuthService;
@@ -21,7 +22,9 @@ export default class AuthController extends Controller {
                 password,
                 organization_name,
             } as RegisterRequest);
-            return res.send(response);
+            return res
+                .status(httpStatusFromError(response.error))
+                .send(response);
         }, 'failed to register new users')(req, res);
     }
 
@@ -33,7 +36,9 @@ export default class AuthController extends Controller {
                 password,
             } as LoginRequest);
 
-            return res.send(response);
+            return res
+                .status(httpStatusFromError(response.error))
+                .send(response);
         }, 'failed to login')(req, res);
     }
 }

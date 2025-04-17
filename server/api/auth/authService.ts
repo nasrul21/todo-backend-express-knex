@@ -12,6 +12,11 @@ import {
 import UserOrganizationRepository from '../user_organization/userOrganizationRepository';
 import { BaseResponse } from '../common/baseResponse';
 import { UserOrganizationEnum } from '../user_organization/userOrganizationModel';
+import {
+    ErrAuthEmailAlreadyRegistered,
+    ErrAuthInvalidLoginCredential,
+    ErrAuthUserNotFound,
+} from '../common/error';
 
 const bcrypt = require('bcrypt');
 export default class AuthService {
@@ -36,7 +41,7 @@ export default class AuthService {
     ): Promise<BaseResponse<RegisterResponse>> {
         const users = await this.userRepository.findByEmail(params.email);
         if (users.length > 0) {
-            return { error: 'Email already registered' };
+            return { error: ErrAuthEmailAlreadyRegistered };
         }
 
         // hash the password
@@ -70,7 +75,7 @@ export default class AuthService {
     async login(params: LoginRequest): Promise<BaseResponse<LoginResponse>> {
         const users = await this.userRepository.findByEmail(params.email);
         if (users.length == 0) {
-            return { error: 'User is not found' };
+            return { error: ErrAuthUserNotFound };
         }
 
         const user = users[0];
@@ -80,7 +85,7 @@ export default class AuthService {
             user.password_hash
         );
         if (!isValidPassword) {
-            return { error: 'Invalid login credentials' };
+            return { error: ErrAuthInvalidLoginCredential };
         }
 
         const secretKey = process.env.JWT_SECRET!;
