@@ -17,4 +17,14 @@ export default class UserOrganizationRepository extends Repository {
             resolve(userOrganizations[0]);
         });
     }
+
+    async findByUserAndOrganization(
+        user_id: number,
+        organization_id: number
+    ): Promise<UserOrganizationModel[]> {
+        return await this.db('user_organizations').where({
+            user_id,
+            organization_id,
+        });
+    }
 }

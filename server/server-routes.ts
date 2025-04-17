@@ -1,4 +1,4 @@
-import { Request, Response, Router, type Express } from 'express';
+import { NextFunction, Request, Response, Router, type Express } from 'express';
 import TodoRepository from './api/todo/todoRepository';
 import dbConnection from './database/connection';
 import TodoService from './api/todo/todoService';
@@ -8,6 +8,10 @@ import OrganizationRepository from './api/organization/organizationRepository';
 import AuthService from './api/auth/authService';
 import AuthController from './api/auth/authController';
 import UserOrganizationRepository from './api/user_organization/userOrganizationRepository';
+import ProjectRepository from './api/project/projectRepository';
+import ProjectService from './api/project/projectService';
+import ProjectController from './api/project/projectController';
+import { authMiddleware } from './api/common/middleware';
 
 export const routers = Router();
 
@@ -16,6 +20,7 @@ const todoRepository = new TodoRepository(dbConnection);
 const userRepository = new UserRepository(dbConnection);
 const organizationRepository = new OrganizationRepository(dbConnection);
 const userOrganizationRepository = new UserOrganizationRepository(dbConnection);
+const projectRepository = new ProjectRepository(dbConnection);
 
 // services
 const todoService = new TodoService(todoRepository);
@@ -24,10 +29,16 @@ const authService = new AuthService(
     organizationRepository,
     userOrganizationRepository
 );
+const projectService = new ProjectService(
+    projectRepository,
+    organizationRepository,
+    userOrganizationRepository
+);
 
 // controllers
 const todoController = new TodoController(todoService);
 const authController = new AuthController(authService);
+const projectController = new ProjectController(projectService);
 
 routers.get('/todo', (req: Request, res: Response) =>
     todoController.getAllTodos(req, res)
@@ -55,3 +66,17 @@ routers.post('/auth/register', (req: Request, res: Response) =>
 routers.post('/auth/login', (req: Request, res: Response) => {
     authController.login(req, res);
 });
+
+// Project Routes
+routers.use((req: Request, res: Response, next: NextFunction) => {
+    authMiddleware(req, res, next);
+});
+routers.post(
+    '/organizations/:orgId/projects',
+    (req: Request, res: Response) => {
+        /* #swagger.security = [{
+            "bearerAuth": []
+    }] */
+        projectController.create(req, res);
+    }
+);

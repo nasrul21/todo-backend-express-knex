@@ -10,7 +10,7 @@ import {
     RegisterResponse,
 } from './authModel';
 import UserOrganizationRepository from '../user_organization/userOrganizationRepository';
-import { BaseResponse } from '../common/base_response';
+import { BaseResponse } from '../common/baseResponse';
 import { UserOrganizationEnum } from '../user_organization/userOrganizationModel';
 
 const bcrypt = require('bcrypt');

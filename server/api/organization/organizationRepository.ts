@@ -17,4 +17,8 @@ export default class OrganizationRepository extends Repository {
             resolve(organizations[0]);
         });
     }
+
+    async findById(id: number): Promise<OrganizationModel[]> {
+        return await this.db('organizations').where({ id }).returning('*');
+    }
 }

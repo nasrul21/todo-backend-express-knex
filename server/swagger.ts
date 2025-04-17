@@ -13,6 +13,14 @@ const doc = {
             description: '',
         },
     ],
+    components: {
+        securitySchemes: {
+            bearerAuth: {
+                type: 'http',
+                scheme: 'bearer',
+            },
+        },
+    },
 };
 
 const outputFile = './swagger_output.json';

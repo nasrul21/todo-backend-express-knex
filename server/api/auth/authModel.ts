@@ -43,3 +43,12 @@ export interface LoginResponse {
     access_token: string;
     token_type: string;
 }
+
+export interface AuthTokenDetail extends Request {
+    user: AuthTokenSign;
+}
+
+export interface AuthTokenSign {
+    id: number;
+    email: string;
+}

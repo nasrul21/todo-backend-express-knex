@@ -1,0 +1,32 @@
+import { Request, Response } from 'express';
+import Controller from '../controller';
+import ProjectService from './projectService';
+import { AuthTokenDetail } from '../auth/authModel';
+import { CreateProjectRequest } from './projectModel';
+import { httpStatusFromError } from '../common/httpStatus';
+
+export default class ProjectController extends Controller {
+    private projectService: ProjectService;
+
+    constructor(projectService: ProjectService) {
+        super();
+        this.projectService = projectService;
+    }
+
+    async create(req: Request, res: Response) {
+        return this.addErrorReporting(async (req: Request, res: Response) => {
+            const user = (req as AuthTokenDetail).user;
+            const { name, description } = req.body as CreateProjectRequest;
+            const { orgId } = req.params as { orgId: string };
+            const response = await this.projectService.create(
+                { name, description },
+                user.id,
+                parseInt(orgId)
+            );
+
+            return res
+                .status(httpStatusFromError(response.error))
+                .json(response);
+        }, 'failed to create new project')(req, res);
+    }
+}
