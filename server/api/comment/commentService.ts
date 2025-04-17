@@ -6,13 +6,18 @@ import {
     ErrInvalidProject,
     ErrInvalidTodo,
 } from '../common/error';
+import { ProjectModel } from '../project/projectModel';
 import ProjectRepository from '../project/projectRepository';
+import { TodoModel } from '../todo/todoModel';
 import TodoRepository from '../todo/todoRepository';
+import { UserOrganizationModel } from '../user_organization/userOrganizationModel';
 import UserOrganizationRepository from '../user_organization/userOrganizationRepository';
 import {
     CreateCommentRequest,
     CreateCommentResponse,
+    GetCommentResponse,
     newCreateCommentResponse,
+    newGetCommentResponse,
 } from './commentModel';
 import CommentRepository from './commentRepository';
 
@@ -39,6 +44,55 @@ export default class CommentService {
         todoId: number,
         user: AuthTokenSign
     ): Promise<BaseResponse<CreateCommentResponse>> {
+        const validateResult = await this.validateTodoProjectAndOrganization(
+            todoId,
+            user.id
+        );
+        if (validateResult.error) {
+            return { error: validateResult.error };
+        }
+
+        const comment = await this.commentRepository.insert({
+            content: params.content,
+            created_at: new Date(),
+            todo_id: todoId,
+            user_id: user.id,
+        });
+
+        const response = newCreateCommentResponse(comment, user);
+        return { data: response };
+    }
+
+    async list(
+        todoId: number,
+        userId: number
+    ): Promise<BaseResponse<GetCommentResponse[]>> {
+        const validateResult = await this.validateTodoProjectAndOrganization(
+            todoId,
+            userId
+        );
+        if (validateResult.error) {
+            return { error: validateResult.error };
+        }
+
+        const comments = await this.commentRepository.findByTodoId(todoId);
+
+        const response = comments.map((comment) =>
+            newGetCommentResponse(comment)
+        );
+        return { data: response };
+    }
+
+    private async validateTodoProjectAndOrganization(
+        todoId: number,
+        userId: number
+    ): Promise<
+        BaseResponse<{
+            todo: TodoModel;
+            project: ProjectModel;
+            userOrganization: UserOrganizationModel;
+        }>
+    > {
         const todos = await this.todoRepository.findById(todoId);
         if (todos.length == 0) {
             return { error: ErrInvalidTodo };
@@ -53,21 +107,14 @@ export default class CommentService {
 
         const userOrganizations =
             await this.userOrganizationRepository.findByUserAndOrganization(
-                user.id,
+                userId,
                 project.organization_id
             );
         if (userOrganizations.length == 0) {
             return { error: ErrForbiddenAccessOrganization };
         }
+        const userOrganization = userOrganizations[0];
 
-        const comment = await this.commentRepository.insert({
-            content: params.content,
-            created_at: new Date(),
-            todo_id: todoId,
-            user_id: user.id,
-        });
-
-        const response = newCreateCommentResponse(comment, user);
-        return { data: response };
+        return { data: { todo, project, userOrganization } };
     }
 }

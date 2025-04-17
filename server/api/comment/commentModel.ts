@@ -40,3 +40,26 @@ export function newCreateCommentResponse(
         created_at: comment.created_at,
     };
 }
+
+export interface GetCommentResponse {
+    id: number;
+    content: string;
+    todo_id: number;
+    user?: {
+        id: number;
+        name: string;
+        email: string;
+    };
+    created_at: Date;
+}
+
+export function newGetCommentResponse(
+    comment: CommentModel
+): GetCommentResponse {
+    return {
+        id: comment.id!,
+        content: comment.content,
+        todo_id: comment.todo_id,
+        created_at: comment.created_at,
+    };
+}

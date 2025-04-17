@@ -139,5 +139,11 @@ routers.post('/todos/:todoId/comment', (req: Request, res: Response) =>
     }] */
     commentController.create(req, res)
 );
+routers.get('/todos/:todoId/comment', (req: Request, res: Response) =>
+    /* #swagger.security = [{
+            "bearerAuth": []
+    }] */
+    commentController.list(req, res)
+);
 
 // End Private Routes
