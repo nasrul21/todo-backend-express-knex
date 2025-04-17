@@ -61,4 +61,19 @@ export default class ProjectController extends Controller {
                 .json(response);
         }, 'failed to update the projects')(req, res);
     }
+
+    async delete(req: Request, res: Response) {
+        return this.addErrorReporting(async (req: Request, res: Response) => {
+            const user = (req as AuthTokenDetail).user;
+            const { projectId } = req.params as { projectId: string };
+            const response = await this.projectService.delete(
+                parseInt(projectId),
+                user.id
+            );
+
+            return res
+                .status(httpStatusFromError(response.error))
+                .json(response);
+        }, 'failed to delete the projects')(req, res);
+    }
 }

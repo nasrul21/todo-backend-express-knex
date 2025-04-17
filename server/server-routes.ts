@@ -89,3 +89,9 @@ routers.patch('/projects/:projectId', (req: Request, res: Response) =>
     }] */
     projectController.update(req, res)
 );
+routers.delete('/projects/:projectId', (req: Request, res: Response) =>
+    /* #swagger.security = [{
+            "bearerAuth": []
+    }] */
+    projectController.delete(req, res)
+);

@@ -75,3 +75,7 @@ export function newUpdateProjectResponse(
         description: project.description,
     };
 }
+
+export interface DeleteProjectResponse {
+    id: number;
+}

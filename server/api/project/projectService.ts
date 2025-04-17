@@ -15,6 +15,7 @@ import UserOrganizationRepository from '../user_organization/userOrganizationRep
 import {
     CreateProjectRequest,
     CreateProjectResponse,
+    DeleteProjectResponse,
     GetProjectResponse,
     newCreateProjectResponse,
     newGetProjectResponse,
@@ -122,6 +123,30 @@ export default class ProjectService {
         });
 
         const response = newUpdateProjectResponse(updatedProject);
+        return { data: response };
+    }
+
+    async delete(
+        id: number,
+        userId: number
+    ): Promise<BaseResponse<DeleteProjectResponse>> {
+        const projects = await this.projectRepository.findById(id);
+        if (projects.length == 0) {
+            return { error: ErrInvalidProject };
+        }
+        const project = projects[0];
+        const validationResult = await this.validateUserOrganization(
+            project.organization_id,
+            userId
+        );
+
+        if (validationResult.error) {
+            return { error: validationResult.error };
+        }
+
+        const deletedProject = await this.projectRepository.delete(id);
+
+        const response: DeleteProjectResponse = { id: deletedProject.id! };
         return { data: response };
     }
 
