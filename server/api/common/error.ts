@@ -7,3 +7,6 @@ export const ErrAuthEmailAlreadyRegistered = 'Email already registered';
 export const ErrAuthUserNotFound = 'User is not found';
 export const ErrAuthInvalidLoginCredential = 'Invalid login credentials';
 export const ErrInvalidProject = 'Invalid project';
+export const ErrInvalidTodo = 'Invalid todo';
+export const ErrForbiddenAccessProject =
+    'user is not eligible to access this project';

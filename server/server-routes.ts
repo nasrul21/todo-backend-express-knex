@@ -64,7 +64,7 @@ routers.get('/projects/:projectId/todo', (req: Request, res: Response) =>
     }] */
     todoController.getAllTodos(req, res)
 );
-routers.get('/todo/:id', (req: Request, res: Response) =>
+routers.get('/projects/:projectId/todo/:id', (req: Request, res: Response) =>
     /* #swagger.security = [{
             "bearerAuth": []
     }] */

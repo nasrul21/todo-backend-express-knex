@@ -29,9 +29,19 @@ export default class TodoController extends Controller {
 
     async getTodo(req: Request, res: Response) {
         return this.addErrorReporting(async (req: Request, res: Response) => {
-            const id = parseInt(req.params.id);
-            const todo = await this.todoService.get(id);
-            return res.send(todo);
+            const user = this.getUserFromToken(req);
+            const { id, projectId } = req.params as {
+                id: string;
+                projectId: string;
+            };
+            const response = await this.todoService.get(
+                parseInt(id),
+                parseInt(projectId),
+                user.id
+            );
+            return res
+                .status(httpStatusFromError(response.error))
+                .send(response);
         }, 'Could not fetch todo')(req, res);
     }
 

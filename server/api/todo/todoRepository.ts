@@ -11,14 +11,8 @@ export default class TodoRepository extends Repository {
         return await this.db('todos').where({ project_id: projectId });
     }
 
-    async get(id: number): Promise<TodoModel> {
-        return new Promise(async (resolve, reject) => {
-            const results = await this.db('todos').where({ id });
-            if (results.length == 0) {
-                reject('todo is not found');
-            }
-            resolve(results[0]);
-        });
+    async findById(id: number): Promise<TodoModel[]> {
+        return await this.db('todos').where({ id });
     }
 
     async create(title: string, order?: number): Promise<TodoModel> {

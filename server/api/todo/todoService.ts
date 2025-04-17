@@ -1,9 +1,13 @@
 import { BaseResponse } from '../common/baseResponse';
 import {
     ErrForbiddenAccessOrganization,
+    ErrForbiddenAccessProject,
     ErrInvalidProject,
+    ErrInvalidTodo,
 } from '../common/error';
+import { ProjectModel } from '../project/projectModel';
 import ProjectRepository from '../project/projectRepository';
+import { UserOrganizationModel } from '../user_organization/userOrganizationModel';
 import UserOrganizationRepository from '../user_organization/userOrganizationRepository';
 import { newTodoReponse, TodoModel, TodoResponse } from './todoModel';
 import TodoRepository from './todoRepository';
@@ -27,18 +31,13 @@ export default class TodoService {
         projectId: number,
         userId: number
     ): Promise<BaseResponse<TodoResponse[]>> {
-        const projects = await this.projectRepository.findById(projectId);
-        if (projects.length == 0) {
-            return { error: ErrInvalidProject };
-        }
-        const project = projects[0];
-        const userOrganizations =
-            await this.userOrganizationRepository.findByUserAndOrganization(
-                userId,
-                project.organization_id
-            );
-        if (userOrganizations.length == 0) {
-            return { error: ErrForbiddenAccessOrganization };
+        const validationResult = await this.validateProjectAndUserOrganization(
+            projectId,
+            userId
+        );
+
+        if (validationResult.error) {
+            return { error: validationResult.error };
         }
 
         const todos = await this.todoRepository.findByProjectId(projectId);
@@ -47,8 +46,31 @@ export default class TodoService {
         return { data: response };
     }
 
-    async get(id: number): Promise<TodoModel> {
-        return await this.todoRepository.get(id);
+    async get(
+        id: number,
+        projectId: number,
+        userId: number
+    ): Promise<BaseResponse<TodoResponse>> {
+        const validationResult = await this.validateProjectAndUserOrganization(
+            projectId,
+            userId
+        );
+
+        if (validationResult.error) {
+            return { error: validationResult.error };
+        }
+        const todos = await this.todoRepository.findById(id);
+        if (todos.length == 0) {
+            return { error: ErrInvalidTodo };
+        }
+        const todo = todos[0];
+
+        if (todo.project_id != projectId) {
+            return { error: ErrForbiddenAccessProject };
+        }
+
+        const response = newTodoReponse(todos[0]);
+        return { data: response };
     }
 
     async create(title: string, order?: number): Promise<TodoModel> {
@@ -66,5 +88,38 @@ export default class TodoService {
 
     async clear(): Promise<TodoModel[]> {
         return await this.todoRepository.clear();
+    }
+
+    protected async validateProjectAndUserOrganization(
+        projectId: number,
+        userId: number
+    ): Promise<
+        BaseResponse<{
+            project: ProjectModel;
+            userOrganization: UserOrganizationModel;
+        }>
+    > {
+        const projects = await this.projectRepository.findById(projectId);
+        if (projects.length == 0) {
+            return { error: ErrInvalidProject };
+        }
+        const project = projects[0];
+        const userOrganizations =
+            await this.userOrganizationRepository.findByUserAndOrganization(
+                userId,
+                project.organization_id
+            );
+
+        if (userOrganizations.length == 0) {
+            return { error: ErrForbiddenAccessOrganization };
+        }
+        const userOrganization = userOrganizations[0];
+
+        return {
+            data: {
+                project,
+                userOrganization,
+            },
+        };
     }
 }
