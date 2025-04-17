@@ -7,6 +7,10 @@ export default class TodoRepository extends Repository {
         return await this.db('todos');
     }
 
+    async findByProjectId(projectId: number): Promise<TodoModel[]> {
+        return await this.db('todos').where({ project_id: projectId });
+    }
+
     async get(id: number): Promise<TodoModel> {
         return new Promise(async (resolve, reject) => {
             const results = await this.db('todos').where({ id });
@@ -51,7 +55,7 @@ export default class TodoRepository extends Repository {
                 .del()
                 .returning('*');
             if (results.length == 0) {
-                reject('failed to update todo');
+                reject('failed to delete todo');
             }
             resolve(results[0]);
         });

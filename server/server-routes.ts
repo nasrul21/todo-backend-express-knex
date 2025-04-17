@@ -23,7 +23,11 @@ const userOrganizationRepository = new UserOrganizationRepository(dbConnection);
 const projectRepository = new ProjectRepository(dbConnection);
 
 // services
-const todoService = new TodoService(todoRepository);
+const todoService = new TodoService(
+    todoRepository,
+    projectRepository,
+    userOrganizationRepository
+);
 const authService = new AuthService(
     userRepository,
     organizationRepository,
@@ -40,25 +44,7 @@ const todoController = new TodoController(todoService);
 const authController = new AuthController(authService);
 const projectController = new ProjectController(projectService);
 
-routers.get('/todo', (req: Request, res: Response) =>
-    todoController.getAllTodos(req, res)
-);
-routers.get('/todo/:id', (req: Request, res: Response) =>
-    todoController.getTodo(req, res)
-);
-routers.post('/todo', (req: Request, res: Response) =>
-    todoController.postTodo(req, res)
-);
-routers.patch('/todo/:id', (req: Request, res: Response) =>
-    todoController.patchTodo(req, res)
-);
-routers.delete('/todo', (req: Request, res: Response) =>
-    todoController.deleteAllTodos(req, res)
-);
-routers.delete('/todo/:id', (req: Request, res: Response) =>
-    todoController.deleteTodo(req, res)
-);
-
+// Start Public Routes
 // Auth Routes
 routers.post('/auth/register', (req: Request, res: Response) =>
     authController.register(req, res)
@@ -66,11 +52,50 @@ routers.post('/auth/register', (req: Request, res: Response) =>
 routers.post('/auth/login', (req: Request, res: Response) => {
     authController.login(req, res);
 });
+// End Public Routes
 
-// Project Routes
+// Start Private Routes
 routers.use((req: Request, res: Response, next: NextFunction) => {
     authMiddleware(req, res, next);
 });
+routers.get('/projects/:projectId/todo', (req: Request, res: Response) =>
+    /* #swagger.security = [{
+            "bearerAuth": []
+    }] */
+    todoController.getAllTodos(req, res)
+);
+routers.get('/todo/:id', (req: Request, res: Response) =>
+    /* #swagger.security = [{
+            "bearerAuth": []
+    }] */
+    todoController.getTodo(req, res)
+);
+routers.post('/todo', (req: Request, res: Response) =>
+    /* #swagger.security = [{
+            "bearerAuth": []
+    }] */
+    todoController.postTodo(req, res)
+);
+routers.patch('/todo/:id', (req: Request, res: Response) =>
+    /* #swagger.security = [{
+            "bearerAuth": []
+    }] */
+    todoController.patchTodo(req, res)
+);
+routers.delete('/todo', (req: Request, res: Response) =>
+    /* #swagger.security = [{
+            "bearerAuth": []
+    }] */
+    todoController.deleteAllTodos(req, res)
+);
+routers.delete('/todo/:id', (req: Request, res: Response) =>
+    /* #swagger.security = [{
+            "bearerAuth": []
+    }] */
+    todoController.deleteTodo(req, res)
+);
+
+// Project Routes
 routers.post('/organizations/:orgId/projects', (req: Request, res: Response) =>
     /* #swagger.security = [{
             "bearerAuth": []
@@ -95,3 +120,4 @@ routers.delete('/projects/:projectId', (req: Request, res: Response) =>
     }] */
     projectController.delete(req, res)
 );
+// End Private Routes

@@ -3,6 +3,7 @@ import TodoService from './todoService';
 import { newTodoReponse } from './todoModel';
 import _ from 'lodash';
 import Controller from '../controller';
+import { httpStatusFromError } from '../common/httpStatus';
 
 export default class TodoController extends Controller {
     private todoService: TodoService;
@@ -14,8 +15,15 @@ export default class TodoController extends Controller {
 
     async getAllTodos(req: Request, res: Response) {
         return this.addErrorReporting(async (req: Request, res: Response) => {
-            const allEntries = await this.todoService.all();
-            return res.send(allEntries.map(_.curry(newTodoReponse)(req)));
+            const user = this.getUserFromToken(req);
+            const { projectId } = req.params as { projectId: string };
+            const response = await this.todoService.list(
+                parseInt(projectId),
+                user.id
+            );
+            return res
+                .status(httpStatusFromError(response.error))
+                .send(response);
         }, 'Could not fetch all todos')(req, res);
     }
 
@@ -33,7 +41,7 @@ export default class TodoController extends Controller {
                 req.body.title,
                 req.body.order
             );
-            return res.send(newTodoReponse(req, created));
+            return res.send(newTodoReponse(created));
         }, 'Could not post todo')(req, res);
     }
 
@@ -43,21 +51,21 @@ export default class TodoController extends Controller {
                 parseInt(req.params.id),
                 req.body
             );
-            return res.send(newTodoReponse(req, patched));
+            return res.send(newTodoReponse(patched));
         }, 'Could not patch todo')(req, res);
     }
 
     async deleteAllTodos(req: Request, res: Response) {
         return this.addErrorReporting(async (req: Request, res: Response) => {
             const deletedEntries = await this.todoService.clear();
-            return res.send(deletedEntries.map(_.curry(newTodoReponse)(req)));
+            return res.send(deletedEntries.map(_.curry(newTodoReponse)()));
         }, 'Could not delete all todos')(req, res);
     }
 
     async deleteTodo(req: Request, res: Response) {
         return this.addErrorReporting(async (req: Request, res: Response) => {
             const deleted = await this.todoService.del(parseInt(req.params.id));
-            return res.send(newTodoReponse(req, deleted));
+            return res.send(newTodoReponse(deleted));
         }, 'Could not delete todo')(req, res);
     }
 }

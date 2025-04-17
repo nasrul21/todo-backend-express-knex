@@ -1,7 +1,7 @@
 import { Request } from 'express';
 
 export interface TodoModel {
-    id: number;
+    id?: number;
     title: string;
     order: number;
     completed: boolean;
@@ -22,20 +22,14 @@ export interface TodoResponse {
     due_date: Date;
     project_id: number;
     created_by: number;
-    url: string;
 }
 
-export function newTodoReponse(req: Request, data: TodoModel): TodoResponse {
-    const protocol = req.protocol,
-        host = req.get('host'),
-        id = data.id;
-
+export function newTodoReponse(data: TodoModel): TodoResponse {
     return {
-        id: id,
+        id: data.id!,
         title: data.title,
         order: data.order,
         completed: data.completed || false,
-        url: `${protocol}://${host}/${id}`,
         description: data.description,
         status: data.status,
         due_date: data.due_date,
